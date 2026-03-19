@@ -12,7 +12,7 @@ export function landingPage() {
     html, body { height: 100%; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1a1a1a; line-height: 1.6; display: flex; flex-direction: column; }
     .container { max-width: 720px; margin: 0 auto; padding: 60px 24px; flex: 1; }
-    h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; }
+    h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; line-height: 1; }
     .subtitle { font-size: 1.2rem; color: #555; margin-bottom: 48px; }
     .steps { margin-bottom: 48px; }
     .step { display: flex; gap: 16px; margin-bottom: 24px; }
