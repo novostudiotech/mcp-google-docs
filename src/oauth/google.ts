@@ -3,7 +3,7 @@ import type { GoogleTokens } from '../types.js';
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo';
-const DRIVE_FILE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+const SCOPES = 'openid email https://www.googleapis.com/auth/drive.file';
 
 export function getGoogleAuthUrl(
   clientId: string,
@@ -14,7 +14,7 @@ export function getGoogleAuthUrl(
     client_id: clientId,
     redirect_uri: redirectUri,
     response_type: 'code',
-    scope: DRIVE_FILE_SCOPE,
+    scope: SCOPES,
     access_type: 'offline',
     prompt: 'consent',
     state,
