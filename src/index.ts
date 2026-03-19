@@ -92,37 +92,41 @@ app.get('/auth/callback', async (c) => {
 });
 
 // --- MCP endpoint ---
-app.all('/mcp', async (c) => {
-  // Handle OPTIONS for CORS
+app.use('/mcp', async (c, next) => {
+  // CORS preflight
   if (c.req.method === 'OPTIONS') {
     return new Response(null, {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Mcp-Session-Id',
+        'Access-Control-Expose-Headers': 'Mcp-Session-Id',
       },
     });
   }
+  await next();
+});
 
+// Bearer auth with proper WWW-Authenticate header for MCP OAuth discovery
+app.use('/mcp', async (c, next) => {
   const provider = new GoogleOAuthProvider(c.env);
+  const middleware = bearerAuth({
+    verifyToken: async (token) => {
+      try {
+        const authInfo = await provider.verifyAccessToken(token);
+        c.set('googleAccessToken' as never, (authInfo.extra?.googleAccessToken as string) ?? token);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+  });
+  return middleware(c, next);
+});
 
-  // Verify bearer token
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    return c.json({ error: 'Missing or invalid Authorization header' }, 401);
-  }
-  const token = authHeader.slice(7);
+app.all('/mcp', async (c) => {
+  const googleAccessToken = c.get('googleAccessToken' as never) as string;
 
-  let authInfo;
-  try {
-    authInfo = await provider.verifyAccessToken(token);
-  } catch {
-    return c.json({ error: 'Invalid or expired access token' }, 401);
-  }
-
-  const googleAccessToken = (authInfo.extra?.googleAccessToken as string) ?? token;
-
-  // Create MCP server for this request
   const server = new McpServer(
     { name: 'google-docs', version: '1.0.0' },
     { capabilities: {} }
