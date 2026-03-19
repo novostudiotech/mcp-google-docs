@@ -1,48 +1,56 @@
 # Task: Build MCP Server for Markdown → Google Docs
 
-Реализуй MCP-сервер по плану в `PLAN.md`. Hono app на Cloudflare Workers: MCP-тул `create_google_doc`, Google OAuth, лендинг.
+Реализуй MCP-сервер по плану в `PLAN.md`. Hono app на Cloudflare Workers.
+
+## Стратегия: максимум параллельности через субагентов
+
+**Используй Agent tool агрессивно.** Файлы в этом проекте независимы — пиши их параллельно через субагентов.
+
+Пример параллельных батчей:
+
+**Batch 1** (независимые модули — запускай 3 агента параллельно):
+- Agent 1: `src/types.ts` + `src/lib/markdown.ts`
+- Agent 2: `src/lib/drive.ts` + `src/oauth/google.ts`
+- Agent 3: `src/pages/landing.ts` + `src/pages/privacy.ts` + `src/pages/terms.ts`
+
+**Batch 2** (зависит от Batch 1):
+- Agent 4: `src/oauth/provider.ts` (зависит от types + google.ts)
+- Agent 5: `src/tools/create-doc.ts` (зависит от types + markdown + drive)
+
+**Batch 3** (финальная сборка):
+- `src/index.ts` — связать всё
+
+Перед каждым батчем проверяй что предыдущий завершился без ошибок.
 
 ## Референсный код
 
-Рабочая конвертация markdown → Google Doc в `../claude/.github/scripts/sync-docs.mjs`:
-- `markdownToHtml()` (строки 35-63) — CSS стили, markdown-it, page break handling
-- Multipart upload (строки 129-142) — Drive API HTML → Google Doc conversion
+Рабочая конвертация в `../claude/.github/scripts/sync-docs.mjs`:
+- `markdownToHtml()` (строки 35-63) — CSS стили, markdown-it
+- Multipart upload (строки 129-142) — Drive API HTML → Google Doc
 - OAuth scopes из `../claude/.github/scripts/get-refresh-token.mjs`
 
 ## Правила
 
-1. **Читай PLAN.md** — следуй шагам 1-11 последовательно
+1. **PLAN.md** — единственный источник правды, следуй шагам
 2. **Google APIs только через `fetch`** — `googleapis` npm не работает на CF Workers
-3. **TypeScript strict** — никаких `any`, все типы в `src/types.ts`
-4. **Реальные пакеты** — перед использованием API пакета сверяйся с его документацией через context7 MCP или веб-поиск. НЕ ВЫДУМЫВАЙ API. Если не уверен в интерфейсе — поищи.
-5. **Inline HTML** — страницы через `hono/html` tagged template, без фронтенд-фреймворков
-6. **Error handling** — Google API может вернуть 401/403/400, обрабатывай и возвращай понятные ошибки
-
-## Критические детали (из reverse thinking анализа)
-
-- `access_type=offline` + `prompt=consent` в Google auth URL — иначе не будет refresh_token
-- Token auto-refresh: access_token живёт 1 час, проверяй expires_at перед каждым вызовом
-- Два KV namespace: `TOKENS` (Google refresh tokens) и `CLIENTS` (MCP dynamic clients)
-- Privacy policy и Terms of Service — обязательны для Google OAuth consent screen
-- `.dev.vars.example` — шаблон для локальных секретов
+3. **TypeScript strict** — никаких `any`
+4. **`@hono/mcp` API** — ПЕРЕД реализацией OAuth provider обязательно проверь реальный интерфейс через context7 MCP (`resolve-library-id` для `@hono/mcp` → `query-docs`). НЕ УГАДЫВАЙ.
+5. **Inline HTML** — `import { html } from 'hono/html'`, без фреймворков
+6. **Error handling** — Google API 401/403/400 → понятные ошибки
+7. **Не трогай wrangler.toml** — KV IDs и GOOGLE_CLIENT_ID заполнены человеком
+8. **`@cloudflare/workers-types`** — уже в devDeps, не забудь `"types": ["@cloudflare/workers-types"]` в tsconfig
 
 ## Порядок работы
 
-1. Scaffold: package.json, tsconfig.json, wrangler.toml, .dev.vars.example
-2. `src/types.ts` — Env bindings, GoogleTokens, DriveFileResult
-3. `src/lib/markdown.ts` — конвертер из sync-docs.mjs (TS + ESM)
-4. `src/lib/drive.ts` — Google Drive API через fetch с error handling
-5. `src/oauth/google.ts` — Google OAuth хелперы (auth URL, exchange, refresh, userinfo)
-6. `src/oauth/provider.ts` — OAuthServerProvider/ProxyOAuthServerProvider для @hono/mcp
-7. `src/tools/create-doc.ts` — MCP tool definition
-8. `src/pages/landing.ts` — лендинг через hono/html
-9. `src/pages/privacy.ts` — privacy policy
-10. `src/pages/terms.ts` — terms of service
-11. `src/index.ts` — Hono app, всё связать: pages + OAuth + MCP
-12. Проверить `npm run dev` + `npm run typecheck`
+1. Scaffold: package.json (с `npm i`), tsconfig.json, .dev.vars.example
+2. **Batch 1 (параллельно):** types.ts, markdown.ts, drive.ts, google.ts, pages/*
+3. **Batch 2 (параллельно):** provider.ts, create-doc.ts
+4. **Batch 3:** index.ts — всё связать
+5. `npm run typecheck` — исправить ошибки
+6. `npm run dev` — проверить запуск
 
 ## Критерий завершения
 
-Когда `wrangler dev` запускается без ошибок, `npm run typecheck` проходит, и `curl localhost:8787/` возвращает HTML лендинг — выведи:
+Когда `npm run typecheck` проходит без ошибок, `wrangler dev` запускается, и `curl localhost:8787/` возвращает HTML — выведи:
 
 <promise>MCP SERVER BUILT</promise>

@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .dev.vars
+wrangler.toml
 .wrangler/
 .DS_Store
 .claude/
