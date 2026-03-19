@@ -1,0 +1,24 @@
+{
+  "name": "mcp-google-docs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4",
+    "@hono/mcp": "^0",
+    "@modelcontextprotocol/sdk": "^1",
+    "markdown-it": "^14",
+    "zod": "^3"
+  },
+  "devDependencies": {
+    "wrangler": "^4",
+    "typescript": "^5",
+    "@cloudflare/workers-types": "^4",
+    "@types/markdown-it": "^14"
+  }
+}
