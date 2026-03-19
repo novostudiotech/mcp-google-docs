@@ -9,8 +9,9 @@ export function landingPage() {
   <title>MCP Google Docs — Markdown to Google Docs</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1a1a1a; line-height: 1.6; }
-    .container { max-width: 720px; margin: 0 auto; padding: 60px 24px; }
+    html, body { height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1a1a1a; line-height: 1.6; display: flex; flex-direction: column; }
+    .container { max-width: 720px; margin: 0 auto; padding: 60px 24px; flex: 1; }
     h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 12px; }
     .subtitle { font-size: 1.2rem; color: #555; margin-bottom: 48px; }
     .steps { margin-bottom: 48px; }
@@ -25,7 +26,7 @@ export function landingPage() {
     .copy-box:hover .copy-icon { color: #555; }
     .copy-box.copied .copy-icon { color: #16a34a; }
     code { font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace; }
-    footer { border-top: 1px solid #e5e5e5; padding-top: 24px; font-size: 0.85rem; color: #888; }
+    footer { border-top: 1px solid #e5e5e5; padding: 24px; font-size: 0.85rem; color: #888; text-align: center; max-width: 720px; margin: 0 auto; width: 100%; }
     footer a { color: #2563eb; text-decoration: none; }
     footer a:hover { text-decoration: underline; }
   </style>
@@ -55,10 +56,10 @@ export function landingPage() {
       }, 2000);
     }
     </script>
-    <footer>
-      <a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms of Service</a>
-    </footer>
   </div>
+  <footer>
+    <a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms of Service</a> · <a href="https://github.com/novostudiotech/mcp-google-docs">GitHub</a>
+  </footer>
 </body>
 </html>`;
 }
