@@ -59,17 +59,29 @@ app.get('/auth/callback', async (c) => {
   }
   await c.env.TOKENS.delete(`state:${stateKey}`);
 
-  // Exchange Google code for tokens
-  const redirectUri = `${c.env.APP_URL}/auth/callback`;
-  const googleTokens = await exchangeGoogleCode(
-    code,
-    c.env.GOOGLE_CLIENT_ID,
-    c.env.GOOGLE_CLIENT_SECRET,
-    redirectUri
-  );
+  let googleTokens;
+  try {
+    // Exchange Google code for tokens
+    const redirectUri = `${c.env.APP_URL}/auth/callback`;
+    googleTokens = await exchangeGoogleCode(
+      code,
+      c.env.GOOGLE_CLIENT_ID,
+      c.env.GOOGLE_CLIENT_SECRET,
+      redirectUri
+    );
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Unknown error';
+    return c.text(`Google token exchange failed: ${msg}`, 400);
+  }
 
-  // Get Google user info
-  const userInfo = await getGoogleUserInfo(googleTokens.access_token);
+  let userInfo;
+  try {
+    // Get Google user info
+    userInfo = await getGoogleUserInfo(googleTokens.access_token);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Unknown error';
+    return c.text(`Failed to get user info: ${msg}`, 400);
+  }
 
   // Store Google tokens keyed by Google user sub
   await c.env.TOKENS.put(`google:${userInfo.sub}`, JSON.stringify(googleTokens));
