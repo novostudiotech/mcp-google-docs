@@ -147,12 +147,24 @@ app.all('/mcp', async (c) => {
 
   const transport = new StreamableHTTPTransport({
     sessionIdGenerator: undefined, // stateless
+    enableJsonResponse: true,
   });
 
   await server.connect(transport);
-  const response = await transport.handleRequest(c);
-  await server.close();
-  return response;
+
+  // Parse body for POST requests before passing to transport
+  let parsedBody: unknown;
+  if (c.req.method === 'POST') {
+    parsedBody = await c.req.json();
+  }
+
+  const response = await transport.handleRequest(c, parsedBody);
+
+  // Clean up after response is sent
+  transport.close();
+  server.close();
+
+  return response ?? c.json({ error: 'No response from transport' }, 500);
 });
 
 export default app;
