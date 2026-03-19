@@ -21,7 +21,7 @@ export function landingPage() {
     .step-text p { color: #555; font-size: 0.95rem; }
     .copy-box { position: relative; background: #f5f5f5; border-radius: 8px; margin-bottom: 48px; cursor: pointer; transition: background 0.15s; }
     .copy-box:hover { background: #ebebeb; }
-    .copy-box pre { padding: 16px 48px 16px 16px; margin: 0; overflow-x: auto; font-size: 0.9rem; background: none; }
+    .copy-box pre { padding: 16px 48px 16px 16px; margin: 0; font-size: 0.9rem; background: none; white-space: pre-wrap; word-break: break-all; }
     .copy-box .copy-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: #888; transition: color 0.15s; }
     .copy-box:hover .copy-icon { color: #555; }
     .copy-box.copied .copy-icon { color: #16a34a; }
