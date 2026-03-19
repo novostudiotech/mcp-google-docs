@@ -40,7 +40,7 @@ export function landingPage() {
       <div class="step"><div class="step-num">3</div><div class="step-text"><h3>Create</h3><p>Use the <code>create_google_doc</code> tool to convert markdown into a Google Doc.</p></div></div>
     </div>
     <div class="copy-box" onclick="copyCmd(this)">
-      <pre><code>claude mcp add google-docs https://google-docs-mcp.novostudio.tech/mcp</code></pre>
+      <pre><code>claude mcp add --transport http google-docs https://google-docs-mcp.novostudio.tech/mcp</code></pre>
       <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
     </div>
     <script>

@@ -1,7 +1,7 @@
 node_modules/
 dist/
 .dev.vars
-wrangler.toml
+# wrangler.toml tracked in git — secrets via wrangler secret / GitHub secrets
 .wrangler/
 .DS_Store
 .claude/

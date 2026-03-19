@@ -1,0 +1,23 @@
+account_id = "ce26b13f8c955129e468539e0bc0cc8d"
+name = "mcp-google-docs"
+main = "src/index.ts"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+routes = [
+  { pattern = "google-docs-mcp.novostudio.tech", custom_domain = true }
+]
+
+[vars]
+GOOGLE_CLIENT_ID = "598790751628-co69bjcooknvsfnacav0bcn4acjgmfd0.apps.googleusercontent.com"
+APP_URL = "https://google-docs-mcp.novostudio.tech"
+
+[[kv_namespaces]]
+binding = "TOKENS"
+id = "8ca1c82101b5482ea78fadf820cb5764"
+preview_id = "b7b1a275f25c4d13bb9f40f5ec7f2f27"
+
+[[kv_namespaces]]
+binding = "CLIENTS"
+id = "7aaff9d11d9449f1b6e365c422a3f608"
+preview_id = "9d1eeb376a9941ad89879e0b30976381"
