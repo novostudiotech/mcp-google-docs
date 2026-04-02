@@ -1,2 +1,8 @@
+# Google OAuth client secret
+# Get from: Google Cloud Console -> APIs & Services -> Credentials
+# Must match the GOOGLE_CLIENT_ID in wrangler.toml
 GOOGLE_CLIENT_SECRET=
+
+# Signing key for MCP OAuth tokens (used by @hono/mcp)
+# Generate with: openssl rand -hex 32
 MCP_SIGNING_KEY=
